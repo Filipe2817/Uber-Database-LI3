@@ -1,6 +1,6 @@
-#ifndef RIDES_H
-#define RIDES_H
+#ifndef RIDE_H
+#define RIDE_H
 
-typedef struct Ride ride;
+typedef struct ride *Ride;
 
 #endif

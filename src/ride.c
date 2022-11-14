@@ -1,7 +1,7 @@
 #include "ride.h"
 
-typedef struct {
-    unsigned int id; /* suficiente para já */
+typedef struct ride {
+    char *id;
     unsigned short date;
     unsigned int driver_id;
     char *user;
@@ -11,4 +11,4 @@ typedef struct {
     char score_driver;
     float tip;
     char *comment; /* informação inútil ? */
-} Ride;
+} *Ride;

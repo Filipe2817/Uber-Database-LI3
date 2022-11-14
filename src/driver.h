@@ -1,6 +1,6 @@
 #ifndef DRIVER_H
 #define DRIVER_H
 
-typedef struct Driver driver;
+typedef struct driver *Driver;
 
 #endif

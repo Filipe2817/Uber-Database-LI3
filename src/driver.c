@@ -1,8 +1,8 @@
 #include <stdbool.h>
 #include "driver.h"
 
-typedef struct {
-    unsigned int id;
+typedef struct driver {
+    char *id;
     char *name;
     unsigned short birth_day;
     char gender;
@@ -11,5 +11,5 @@ typedef struct {
     char *city;
     unsigned short account_creation;
     bool account_status;
-} Driver;
+} *Driver;
 
