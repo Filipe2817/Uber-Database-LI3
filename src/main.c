@@ -7,6 +7,6 @@
 
 int main(int argc, char **argv)
 {
-    parser_q1();
+    q1();
     return 0;
 }

@@ -1,7 +1,9 @@
-#include <stdio.h> 
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <string.h>  
+#include <string.h>
+#include <errno.h>
+#include "date.h"
 #include "utils.h"
 
 char **split_string(char *str, int n_elems)
@@ -44,15 +46,53 @@ void free_str_array(char **arr, int n)
     free(arr);
 }
 
-char *strcat_arr(char **strArr, int lowIndex, int highIndex)
+char *get_age(char *birth_date)
 {
-    int i = lowIndex;
+    char ref_age[] = "9/10/2022";
+    char *age_str = malloc(5*sizeof(char));
+    unsigned short birth_days = date_to_int(birth_date);
+    unsigned short ref_days = date_to_int(ref_age);
+    unsigned short age_days = ref_days - birth_days;
+    unsigned short age = age_days/365;
+    sprintf(age_str, "%hu", age);
+    return age_str;
+}
+
+char *strcat_driver_data(char **strArr)
+{
     char *result = malloc(10000 * sizeof(char));
     result[0] = '\0';
-    for (i = lowIndex; i <= highIndex; i++)
-    {
-        strcat(result, strArr[i]);
-        strcat(result, ";");
-    }
+    strcat(result, strArr[1]);
+    strcat(result, ";");
+    strcat(result, strArr[3]);
+    strcat(result, ";");
+    strcat(result, get_age(strArr[2]));
+    strcat(result, ";");
+    return result;
+}
+
+char *strcat_user_data(char **strArr)
+{
+    char *result = malloc(10000 * sizeof(char));
+    result[0] = '\0';
+    strcat(result, strArr[1]);
+    strcat(result, ";");
+    strcat(result, strArr[2]);
+    strcat(result, ";");
+    strcat(result, get_age(strArr[3]));
+    strcat(result, ";");
+    return result;
+}
+
+
+int str_to_int(char *str) {
+    char *end = NULL;
+    errno = 0;
+    int result;
+    long value = strtol(str, &end, 10);
+
+    if (errno == 0 && *end == '\0') // Boundary check not needed since we are going to do an input validation
+        result = (int)value;
+
     return result;
 }
