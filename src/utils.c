@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
-#include "utils.h"
+#include "../include/utils.h"
 
 char *get_file(char *path, const char *file) {
     char *result = malloc(strlen(path) + strlen(file) + 1);
@@ -33,3 +33,15 @@ int str_to_int(char *str) {
     return result;
 }
 
+float str_to_float(char *str) {
+    char *end = NULL;
+    errno = 0;
+    float result;
+    float value = strtof(str, &end);
+
+    if (errno == 0 && *end == '\0') {
+        result = value;
+    }
+    
+    return result;
+}

@@ -2,37 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "utils.h"
+#include "../include/utils.h"
+#include "../include/catalog.h"
 
-int count_elems(const char *line) {
-    int counter = 0;
-
-    for (int i = 0; line[i] != '\0'; i++)
-        if (line[i] == ';')
-            counter++;
-
-    return (counter + 1);
-}
-
-void parse_line(const char *line, int n_elems) { // d = 9, u = 7, r = 10
-    int index = 0;
-    char **result = malloc(sizeof(char*) * n_elems);    
-    char *line_copy, *save;
+void parse_line(const char *line, char **fields) {
+    int index = 0;   
+    char *line_copy = NULL;
     char *token = NULL;
 
-    line_copy = save = strdup(line);
+    line_copy = strdup(line); //save variable is fields[0] 
     assert(line_copy != NULL);
 
-    while((token = strsep(&line_copy, ";")) != NULL)
-        result[index++] = token;
-
-    debug_parser(result, n_elems);
-        
-    free(save);
-    free(result);
+    while((token = strsep(&line_copy, ";")) != NULL) // don't need to compare n_fields with index (input validation)
+        fields[index++] = token;
 }
 
-void parse_file(char *filename) {
+void parse_file(char *filename, int n_fields, void (*function_ptr)(char **, Catalog), Catalog catalog) {
     FILE *fptr = NULL;
     fptr = fopen(filename, "r");
 
@@ -44,12 +29,16 @@ void parse_file(char *filename) {
     char *line = NULL;
     size_t len = 0;
     ssize_t nread; /* number of characters read, including the delimiter character */
-    
-    getline(&line, &len, fptr); // 1st line is disposable
-    int n = count_elems(line);
 
+    (void)getline(&line, &len, fptr); // 1st line is disposable, using void cast to omit compiler warning
+    
     while((nread = getline(&line, &len, fptr)) != -1) {
-        parse_line(line, n);
+        char **fields = malloc(sizeof(char*) * n_fields);
+        parse_line(line, fields);
+        //debug_parser(fields, n_fields);
+        (*function_ptr)(fields, catalog);
+        free(fields[0]);
+        free(fields);
     }
     free(line);
     fclose(fptr);

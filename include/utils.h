@@ -7,4 +7,6 @@ void debug_parser(char **arr, int n);
 
 int str_to_int(char *str);
 
+float str_to_float(char *str);
+
 #endif
