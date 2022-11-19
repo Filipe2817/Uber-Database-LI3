@@ -1,15 +1,60 @@
+# Recursive wildcard 
+# The first parameter ($1) is a list of directories, and the second ($2) is a list of patterns to match
+rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+
+# Default to sanitizer build
+# Override with `make BUILD=debug` or `make BUILD=release`
+BUILD := sanitizer
+
+# Compiler
 CC = gcc
-CFLAGS = -Wall -Wextra -Wwrite-strings -Wno-parentheses -Wpedantic -Warray-bounds -pedantic-errors -g -fsanitize=address 
-LIBS = -lm
-OBJS = src/main.o src/ride.o src/user.o src/driver.o src/parser.o src/utils.o src/date.o
-TARGET = main
+
+# Flags
+FLAGS.release = -Wall -Wextra -Wdouble-promotion -Werror=pedantic -Werror=vla -pedantic-errors -Wfatal-errors -flto -O2 -march=native -mtune=native
+FLAGS.sanitizer = -Wall -Wextra -Wdouble-promotion -Werror=pedantic -Werror=vla -pedantic-errors -Wfatal-errors -g -fsanitize=address
+FLAGS.debug = -Wall -Wextra -Wdouble-promotion -Werror=pedantic -Werror=vla -pedantic-errors -Wfatal-errors -O0 -g
+FLAGS := $(FLAGS.$(BUILD))
+
+# Objects directory
+OBJ_DIR := build
+
+# Get sources, headers and object files
+SRCS = $(call rwildcard,src,*.c)
+HEADERS = $(call rwildcard,include,*.h)
+OBJS = $(SRCS:src/%.c=$(OBJ_DIR)/%.o) #$(SRCS:.c=.o)
+
+# Other stuff to compile with
+LIBS = -lm -lglib-2.0
+INCLUDES = -Iinclude
 PKG_CONFIG = `pkg-config --cflags --libs glib-2.0`
+TARGET = main-program
+
+# Pretty stuff
+NO_COLOR = \033[m
+LINKING_COLOR = \033[0;33m
+COMPILING_COLOR = \033[0;33m
+OK_COLOR = \033[0;32m
+DELETING_COLOR = \033[0;31m
+COMPILING_STRING = "[COMPILING]"
+LINKING_STRING = "[LINKING]"
+DELETING_STRING = "[DELETING]"
+OK_STRING = "[OK]"
+
+
+$(OBJ_DIR)/%.o: src/%.c $(HEADERS)
+	@mkdir -p $(dir $@)
+	@printf "%b" "$(LINKING_COLOR)$(LINKING_STRING) $(NO_COLOR)$@\n";
+	@$(CC) $(FLAGS) -c -o $@ $(INCLUDES) $(PKG_CONFIG) $< $(LIBS)
+
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	@printf "%b" "$(COMPILING_COLOR)$(COMPILING_STRING) $(NO_COLOR)$@\n";
+	@$(CC) $(FLAGS) -o $@ $(INCLUDES) $(PKG_CONFIG) $^ $(LIBS)
+	@printf "%b" "$(OK_COLOR)$(OK_STRING) $(NO_COLOR)\n";
 
-run: $(TARGET)
-	./main
-
+# Remove the object directory (and its contents) and main-program
+.PHONY: clean
 clean:
-	@rm -f $(TARGET) $(OBJS)
+	@printf "%b" "$(DELETING_COLOR)$(DELETING_STRING) $(NO_COLOR)$(OBJ_DIR) directory\n"
+	@printf "%b" "$(DELETING_COLOR)$(DELETING_STRING) $(NO_COLOR)$(TARGET)\n"
+	@rm -rf $(TARGET) $(OBJ_DIR)

@@ -1,7 +1,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include "user.h"
+#include <stdio.h>
+#include "../include/user.h"
+#include "../include/date.h"
 
 typedef struct user {
     char *username;
@@ -18,40 +20,54 @@ User init_user() {
 
     user->username = NULL;
     user->name = NULL;
+    user->gender = NULL;
+    user->pay_method = NULL;
 
     return user;
 }
 
-void set_user_username(User user, char *username) {
-    user->username = username;
-}
+User create_user(char **fields) {
+    User user = init_user();
 
-void set_user_name(User user, char *name) {
-    user->name = name;
-}
+    user->username = strdup(fields[0]);
+    user->name = strdup(fields[1]);
+    user->gender = strdup(fields[2]);
+    user->birth_date = date_to_int(fields[3]);
+    user->account_creation = date_to_int(fields[4]);
+    user->pay_method = strdup(fields[5]);
 
-void set_user_gender(User user, char *gender) {
-    user->gender = gender;
-}
-
-void set_user_birth_date(User user, char *birth_date) {
-
-}
-
-void set_user_account_creation(User user, char *account_creation) {
-
-}
-
-void set_user_pay_method(User user, char *pay_method) {
-    user->pay_method = pay_method;
-}
-
-void set_user_account_status(User user, char *account_status) {
-    char active[] = "active";
-
-    if(strcmp(account_status, active)) /* return = 0 --> str1 == str2 */
+    if(strcmp(fields[6], "active\n")) /* return = 0 --> str1 == str2 */
         user->account_status = false;
     else
         user->account_status = true;
+
+    return user;
 }
 
+char *get_user_username(User user) {
+    return strdup(user->username);
+}
+
+void free_user(User user) {
+    free(user->username);
+    free(user->name);
+    free(user->gender);
+    free(user->pay_method);
+    free(user);
+}
+
+// For debug purposes
+void print_user(User user) {
+    char *birth_date = int_to_date(user->birth_date);
+    char *account_creation = int_to_date(user->account_creation);
+    char *account_status;
+    
+    if (user->account_status)
+        account_status = "active";
+    else
+        account_status = "inactive";
+
+    printf("[%s, %s, %s, %s, %s, %s, %s]\n", user->username, user->name, user->gender, birth_date, account_creation, user->pay_method, account_status);
+    free(birth_date);
+    free(account_creation);
+}
