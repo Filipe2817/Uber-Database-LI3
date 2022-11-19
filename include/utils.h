@@ -15,4 +15,12 @@ int str_to_int(char *str);
 
 void init_str_to_0(char *str);
 
+char *get_file(char *path, const char *file);
+
+void debug_parser(char **arr, int n);
+
+int str_to_int(char *str);
+
+float str_to_float(char *str);
+
 #endif

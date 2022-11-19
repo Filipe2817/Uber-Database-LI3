@@ -3,10 +3,8 @@
 
 typedef struct date Date;
 
-unsigned short date_to_int(char *d);
+unsigned short date_to_int(char *date);
 
-Date int_to_date(unsigned short date);
-
-void print_date(Date d);
+char *int_to_date(unsigned short date);
 
 #endif

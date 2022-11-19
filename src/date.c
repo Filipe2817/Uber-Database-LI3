@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "../include/date.h"
 #include "../include/utils.h"
-
 
 typedef struct date {
     int d, m, y;
@@ -10,11 +10,29 @@ typedef struct date {
 
 Date convert_string_to_date(char *date) {
     Date result;
+    char *temp = strdup(date);
+    char *save = temp;
 
-    result.d = str_to_int(strsep(&date, "/"));
-    result.m = str_to_int(strsep(&date, "/"));
-    result.y = str_to_int(strsep(&date, "\0"));
-    
+    result.d = str_to_int(strsep(&temp, "/"));
+    result.m = str_to_int(strsep(&temp, "/"));
+    result.y = str_to_int(strsep(&temp, "\0"));
+
+    free(save);
+    return result;
+}
+
+char *convert_date_to_string(Date d) {
+    char day[3];
+    char month[3];
+    char year[5];
+    sprintf(day, "%d", d.d);
+    sprintf(month, "%d", d.m);
+    sprintf(year, "%d", d.y);
+
+    size_t size = strlen(day) + strlen(month) + strlen(year) + 3;
+    char *result = malloc(size);
+    snprintf(result, size, "%s/%s/%s", day, month, year);
+
     return result;
 }
 
@@ -31,7 +49,7 @@ int count_leap_years(Date d) {
     return (years / 4 - years / 100 + years / 400);
 }
 
-unsigned short date_to_int(char *date){
+unsigned short date_to_int(char *date) {
     const int month_days[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
     Date d = convert_string_to_date(date);
     // Number of days before d1 (1/1/1900) that is our reference date (number 0)
@@ -50,8 +68,9 @@ unsigned short date_to_int(char *date){
     return (n2 - n1);
 }
 
-Date int_to_date(unsigned short date) {
-    Date result;
+char *int_to_date(unsigned short date) {
+    Date d;
+    char *result;
     //Number of days between 1 January 1900 and the date we want to find
     int days_since_epoch = date;
     int z = days_since_epoch + 693901; //693901: days from 01-03-0000 to 01-01-1900
@@ -70,14 +89,13 @@ Date int_to_date(unsigned short date) {
     //Get the month (counting from March)
     int mp = (5 * doy + 2) / 153;                                     // [0, 11]
     //Getting the correct day of the month
-    result.d = doy - (153 * mp + 2) / 5 + 1;                          // [1, 31]
+    d.d = doy - (153 * mp + 2) / 5 + 1;                          // [1, 31]
     //Restoring the correct month (shifting the start back to January)
-    result.m = mp + (mp < 10 ? 3 : -9);                             // [1, 12]
+    d.m = mp + (mp < 10 ? 3 : -9);                             // [1, 12]
     //Restoring the current year
-    result.y = yoe + era * 400 + (result.m > 2 ? 0 : 1);
-    return result;
-}
+    d.y = yoe + era * 400 + (d.m > 2 ? 0 : 1);
 
-void print_date(Date d) {
-    printf("%d/%d/%d", d.d, d.m, d.y);
+    result = convert_date_to_string(d);
+
+    return result;
 }
