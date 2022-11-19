@@ -1,5 +1,5 @@
 #include <stdbool.h>
-#include "user.h"
+#include "../include/user.h"
 
 typedef struct {
     char *username;

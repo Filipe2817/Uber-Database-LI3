@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "date.h"
-#include "utils.h"
+#include "../include/date.h"
+#include "../include/utils.h"
 
 
 typedef struct date {

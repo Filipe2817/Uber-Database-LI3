@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "user.h"
-#include "driver.h"
-#include "ride.h"
-#include "q1.h"
+#include <glib.h>
+#include "../include/user.h"
+#include "../include/driver.h"
+#include "../include/ride.h"
+#include "../include/q1.h"
+#include "../include/q3.h"
+#include "../include/parser.h"
 
 int main(int argc, char **argv)
 {
-    q1();
+    parser();
     return 0;
 }

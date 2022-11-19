@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <glib.h>
-#include "driver.h"
+#include "../include/driver.h"
 
 typedef struct Driver
 {

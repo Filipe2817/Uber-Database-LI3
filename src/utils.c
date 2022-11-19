@@ -3,8 +3,8 @@
 #include <assert.h>
 #include <string.h>
 #include <errno.h>
-#include "date.h"
-#include "utils.h"
+#include "../include/date.h"
+#include "../include/utils.h"
 
 char **split_string(char *str, int n_elems)
 {
@@ -49,11 +49,11 @@ void free_str_array(char **arr, int n)
 char *get_age(char *birth_date)
 {
     char ref_age[] = "9/10/2022";
-    char *age_str = malloc(5*sizeof(char));
+    char *age_str = malloc(5 * sizeof(char));
     unsigned short birth_days = date_to_int(birth_date);
     unsigned short ref_days = date_to_int(ref_age);
     unsigned short age_days = ref_days - birth_days;
-    unsigned short age = age_days/365;
+    unsigned short age = age_days / 365;
     sprintf(age_str, "%hu", age);
     return age_str;
 }
@@ -73,7 +73,7 @@ char *strcat_driver_data(char **strArr)
 
 char *strcat_user_data(char **strArr)
 {
-    char *result = malloc(10000 * sizeof(char));
+    char *result = malloc(100 * sizeof(char));
     result[0] = '\0';
     strcat(result, strArr[1]);
     strcat(result, ";");
@@ -84,8 +84,19 @@ char *strcat_user_data(char **strArr)
     return result;
 }
 
+char *strcat_user_data_q3(char **strArr)
+{
+    char *result = malloc(100 * sizeof(char));
+    result[0] = '\0';
+    strcat(result, strArr[0]);
+    strcat(result, ";");
+    strcat(result, strArr[1]);
+    strcat(result, ";");
+    return result;
+}
 
-int str_to_int(char *str) {
+int str_to_int(char *str)
+{
     char *end = NULL;
     errno = 0;
     int result;
@@ -95,4 +106,9 @@ int str_to_int(char *str) {
         result = (int)value;
 
     return result;
+}
+
+void init_str_to_0(char *str)
+{
+    str[0] = '\0';
 }

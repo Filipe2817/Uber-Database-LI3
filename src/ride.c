@@ -1,4 +1,4 @@
-#include "ride.h"
+#include "../include/ride.h"
 
 typedef struct {
     unsigned int id; /* suficiente para já */

@@ -3,34 +3,14 @@
 #include <glib.h>
 #include <string.h>
 #include <ctype.h>
-#include "q1.h"
-#include "utils.h"
-#include "driver.h"
-#include "ride.h"
-#include "user.h"
-#include "date.h"
+#include "../include/q1.h"
+#include "../include/utils.h"
+#include "../include/driver.h"
+#include "../include/ride.h"
+#include "../include/user.h"
+#include "../include/date.h"
 
 // idades contam-se a 9/10/22
-
-void print_hasht(GHashTable *t, char **keys, int l)
-{
-    int i = 0;
-    for (i = 0; i < l; i++)
-    {
-        printf("%s\n", (char *)g_hash_table_lookup(t, keys[i]));
-    }
-}
-
-int username_index_link(char **usernames, char *user, int size)
-{
-    int i = 0;
-    for (i = 0; i < size; i++)
-    {
-        if (strcmp(user, usernames[i]) == 0)
-            return i;
-    }
-    return -1;
-}
 
 float get_starting_money(char *car_class)
 {
@@ -68,7 +48,7 @@ float get_money_km(char *car_class)
     return money_km;
 }
 
-void get_format_rides_data_driver(float *rating, int *ratings_quantity, int *total_rides, float *money, char **car_classes, char **remains, int size)
+void get_format_rides_data_driver_q1(float *rating, int *ratings_quantity, int *total_rides, float *money, char **car_classes, char **remains, int size)
 {
     int i = 0;
 
@@ -114,7 +94,7 @@ void get_format_rides_data_driver(float *rating, int *ratings_quantity, int *tot
     free(money_str);
 }
 
-int parser_driver(GHashTable *hashD, char **ids, char **remains)
+int parser_driver_q1(GHashTable *hashD, char **ids, char **remains)
 {
     int i = 0, u = 0;
 
@@ -154,7 +134,7 @@ int parser_driver(GHashTable *hashD, char **ids, char **remains)
     int *total_rides = calloc(100000, sizeof(int));
     float *money = calloc(100000, sizeof(float));
 
-    get_format_rides_data_driver(rating, ratings_quantity, total_rides, money, car_classes, remains, i);
+    get_format_rides_data_driver_q1(rating, ratings_quantity, total_rides, money, car_classes, remains, i);
 
     for (u = 0; u < i; u++)
     {
@@ -178,7 +158,7 @@ int parser_driver(GHashTable *hashD, char **ids, char **remains)
     return i;
 }
 
-void get_format_rides_data_user(float *rating, short *ratings_quantity, short *total_rides, float *money, GHashTable *car_classes, GHashTable *usernames_to_index, char **remains, int size)
+void get_format_rides_data_user_q1(float *rating, short *ratings_quantity, short *total_rides, float *money, GHashTable *car_classes, GHashTable *usernames_to_index, char **remains, int size)
 {
     int i = 0, index = 0;
 
@@ -227,7 +207,7 @@ void get_format_rides_data_user(float *rating, short *ratings_quantity, short *t
     free(money_str);
 }
 
-int parser_user(GHashTable *hashD, char **usernames, char **remains)
+int parser_user_q1(GHashTable *hashD, char **usernames, char **remains)
 {
     int i = 0, u = 0;
     GHashTable *car_classes = g_hash_table_new(g_str_hash, g_str_equal);
@@ -275,7 +255,7 @@ int parser_user(GHashTable *hashD, char **usernames, char **remains)
     short *total_rides = calloc(100000, sizeof(short));
     float *money = calloc(100000, sizeof(float));
 
-    get_format_rides_data_user(rating, ratings_quantity, total_rides, money, car_classes, username_to_index, remains, i);
+    get_format_rides_data_user_q1(rating, ratings_quantity, total_rides, money, car_classes, username_to_index, remains, i);
 
     g_hash_table_destroy(car_classes);
     g_hash_table_destroy(username_to_index);
@@ -303,56 +283,95 @@ int parser_user(GHashTable *hashD, char **usernames, char **remains)
     return i;
 }
 
-int scan_print(GHashTable *HashD, GHashTable *HashU, char **ids_usernames, char **remains)
+// int scan_print_q1(GHashTable *HashD, GHashTable *HashU, char **ids_usernames, char **remains)
+// {
+//     // char *input = malloc(50 * sizeof(char));
+//     // input[0] = '\0';
+//     // int lim = 0;
+
+//     // int pd = parser_driver_q1(HashD, ids_usernames, remains);
+//     // int pu = parser_user_q1(HashU, ids_usernames, remains);
+
+//     // if (pu > pd)
+//     //     lim = pu;
+//     // else
+//     //     lim = pd;
+
+//     // FILE *inputxt = fopen("input.txt", "r");
+//     // while (fgets(input, 50, inputxt) != NULL)
+//     // {
+//     //     if (input[0] == '1' && input[1] == ' ')
+//     //     {
+//     //         input += 2;
+//     //         input[strcspn(input, "\n")] = '\0';
+//     //         if (isdigit(input[0]))
+//     //         {
+//     //             FILE *results = fopen("Resultados/resultados.txt", "ab");
+//     //             fprintf(results, "%s\n", (char *)g_hash_table_lookup(HashD, input));
+//     //             fclose(results);
+//     //         }
+//     //         else
+//     //         {
+
+//     //             FILE *results = fopen("Resultados/resultados.txt", "ab");
+//     //             fprintf(results, "%s\n", (char *)g_hash_table_lookup(HashU, input));
+//     //             fclose(results);
+//     //         }
+//     //     }
+//     // }
+//     // fclose(inputxt);
+//     return lim;
+// }
+
+int build_tables_q1(GHashTable *hashD, GHashTable *hashU, char **remains, char **ids_usernames)
 {
-    char *input = malloc(50 * sizeof(char));
-    input[0] = '\0';
     int lim = 0;
 
-    int pd = parser_driver(HashD, ids_usernames, remains);
-    int pu = parser_user(HashU, ids_usernames, remains);
+    int pd = parser_driver_q1(hashD, ids_usernames, remains);
+    int pu = parser_user_q1(hashU, ids_usernames, remains);
 
     if (pu > pd)
         lim = pu;
     else
         lim = pd;
 
-    FILE *inputxt = fopen("inputQ1.txt", "r");
-    while (fgets(input, 50, inputxt) != NULL)
-    {
-        if (input[0] == '1' && input[1] == ' ')
-        {
-            input += 2;
-            input[strcspn(input, "\n")] = '\0';
-            if (isdigit(input[0]))
-            {
-                FILE *results = fopen("Resultados/resultados.txt", "ab");
-                fprintf(results, "%s\n", (char *)g_hash_table_lookup(HashD, input));
-                fclose(results);
-            }
-            else
-            {
-
-                FILE *results = fopen("Resultados/resultados.txt", "ab");
-                fprintf(results, "%s\n", (char *)g_hash_table_lookup(HashU, input));
-                fclose(results);
-            }
-        }
-    }
-    fclose(inputxt);
     return lim;
 }
 
-void q1()
+void print_q1(GHashTable *hashD, GHashTable *hashU, char *input)
 {
-    int lim = 0;
-    GHashTable *hashD = g_hash_table_new(g_str_hash, g_str_equal);
-    GHashTable *hashU = g_hash_table_new(g_str_hash, g_str_equal);
-    char **remains = malloc(100000 * sizeof(char *));
-    char **ids_usernames = malloc(100000 * sizeof(char *));
-    lim = scan_print(hashD, hashU, ids_usernames, remains);
+    input[strcspn(input, "\n")] = '\0';
+    if (isdigit(input[0]))
+    {
+        FILE *results = fopen("Resultados/resultados.txt", "ab");
+        fprintf(results, "%s\n", (char *)g_hash_table_lookup(hashD, input));
+        fclose(results);
+    }
+    else
+    {
+
+        FILE *results = fopen("Resultados/resultados.txt", "ab");
+        fprintf(results, "%s\n", (char *)g_hash_table_lookup(hashU, input));
+        fclose(results);
+    }
+}
+
+// void q1()
+// {
+//     int lim = 0;
+//     GHashTable *hashD = g_hash_table_new(g_str_hash, g_str_equal);
+//     GHashTable *hashU = g_hash_table_new(g_str_hash, g_str_equal);
+//     char **remains = malloc(100000 * sizeof(char *));
+//     char **ids_usernames = malloc(100000 * sizeof(char *));
+//     lim = scan_print_q1(hashD, hashU, ids_usernames, remains);
+//     g_hash_table_destroy(hashD);
+//     g_hash_table_destroy(hashU);
+//     free_str_array(remains, lim);
+//     free_str_array(ids_usernames, lim);
+// }
+
+void free_tables_q1(GHashTable *hashD, GHashTable *hashU)
+{
     g_hash_table_destroy(hashD);
     g_hash_table_destroy(hashU);
-    free_str_array(remains, lim);
-    free_str_array(ids_usernames, lim);
 }

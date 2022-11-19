@@ -9,6 +9,10 @@ char *strcat_driver_data(char **strArr);
 
 char *strcat_user_data(char **strArr);
 
+char *strcat_user_data_q3(char **strArr);
+
 int str_to_int(char *str);
+
+void init_str_to_0(char *str);
 
 #endif
