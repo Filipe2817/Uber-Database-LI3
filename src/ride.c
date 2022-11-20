@@ -1,11 +1,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "../include/catalog.h"
 #include "../include/ride.h"
 #include "../include/date.h"
 #include "../include/utils.h"
 
-typedef struct ride {
+typedef struct ride
+{
     char *id;
     unsigned short date;
     char *driver_id;
@@ -16,9 +18,10 @@ typedef struct ride {
     unsigned short score_driver;
     float tip;
     char *comment; /* informação inútil ? */
-} *Ride;
+} * Ride;
 
-Ride init_ride() {
+Ride init_ride()
+{
     Ride ride = malloc(sizeof(struct ride));
 
     ride->id = NULL;
@@ -30,7 +33,8 @@ Ride init_ride() {
     return ride;
 }
 
-Ride create_ride(char **fields) {
+Ride create_ride(char **fields)
+{
     Ride ride = init_ride();
 
     ride->id = strdup(fields[0]);
@@ -47,7 +51,38 @@ Ride create_ride(char **fields) {
     return ride;
 }
 
-void free_ride(Ride ride) {
+char *get_ride_driver_id(Ride ride)
+{
+    return strdup(ride->driver_id);
+}
+
+char *get_ride_user_username(Ride ride)
+{
+    return strdup(ride->user);
+}
+
+unsigned short get_ride_user_score(Ride ride)
+{
+    return ride->score_user;
+}
+
+unsigned short get_ride_driver_score(Ride ride)
+{
+    return ride->score_driver;
+}
+
+unsigned short get_ride_distance(Ride ride)
+{
+    return ride->distance;
+}
+
+double get_ride_tip(Ride ride)
+{
+    return ride->tip;
+}
+
+void free_ride(Ride ride)
+{
     free(ride->id);
     free(ride->driver_id);
     free(ride->user);
@@ -57,18 +92,18 @@ void free_ride(Ride ride) {
 }
 
 // For debug purposes
-void print_ride(Ride ride) {
+void print_ride(Ride ride)
+{
     char *date = int_to_date(ride->date);
     char distance[5];
     char score_user[2];
     char score_driver[2];
     char tip[10];
-    snprintf(distance, 5, "%u", ride->distance);
-    snprintf(score_user, 2, "%u", ride->score_user);
-    snprintf(score_driver, 2, "%u", ride->score_driver);
+    snprintf(distance, 5, "%hu", ride->distance);
+    snprintf(score_user, 2, "%hu", ride->score_user);
+    snprintf(score_driver, 2, "%hu", ride->score_driver);
     snprintf(tip, 10, "%.3f", (double)ride->tip); // fix this
 
     printf("[%s, %s, %s, %s, %s, %s, %s, %s, %s, %s]\n", ride->id, date, ride->driver_id, ride->user, ride->city, distance, score_user, score_driver, tip, ride->comment);
     free(date);
 }
-

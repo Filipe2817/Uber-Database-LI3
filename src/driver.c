@@ -2,10 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "../include/catalog.h"
 #include "../include/driver.h"
 #include "../include/date.h"
+#include "../include/utils.h"
 
-typedef struct driver {
+typedef struct driver
+{
     char *id;
     char *name;
     unsigned short birth_date;
@@ -15,9 +18,10 @@ typedef struct driver {
     char *city;
     unsigned short account_creation;
     bool account_status;
-} *Driver;
+} * Driver;
 
-Driver init_driver() {
+Driver init_driver()
+{
     Driver driver = malloc(sizeof(struct driver));
 
     driver->id = NULL;
@@ -26,11 +30,13 @@ Driver init_driver() {
     driver->car_class = NULL;
     driver->license_plate = NULL;
     driver->city = NULL;
+    driver->account_status = true;
 
     return driver;
 }
 
-Driver create_driver(char **fields) {
+Driver create_driver(char **fields)
+{
     Driver driver = init_driver();
 
     driver->id = strdup(fields[0]);
@@ -42,19 +48,44 @@ Driver create_driver(char **fields) {
     driver->city = strdup(fields[6]);
     driver->account_creation = date_to_int(fields[7]);
 
-    if(strcmp(fields[8], "active\n")) /* return = 0 --> str1 == str2 */
+    if (strcmp(fields[8], "active\n")) /* return = 0 --> str1 == str2 */
         driver->account_status = false;
-    else
-        driver->account_status = true;
 
     return driver;
 }
 
-char *get_driver_id(Driver driver) {
+char *get_driver_id(Driver driver)
+{
     return strdup(driver->id);
 }
 
-void free_driver(Driver driver) {
+char *get_driver_name(Driver driver)
+{
+    return strdup(driver->name);
+}
+
+char *get_driver_gender(Driver driver)
+{
+    return strdup(driver->gender);
+}
+
+char *get_driver_age(Driver driver)
+{
+    return get_age(driver->birth_date);
+}
+
+char *get_driver_car_class(Driver driver)
+{
+    return strdup(driver->car_class);
+}
+
+bool get_driver_account_status(Driver driver)
+{
+    return driver->account_status;
+}
+
+void free_driver(Driver driver)
+{
     free(driver->id);
     free(driver->name);
     free(driver->gender);
@@ -65,11 +96,12 @@ void free_driver(Driver driver) {
 }
 
 // For debug purposes
-void print_driver(Driver driver) {
+void print_driver(Driver driver)
+{
     char *birth_date = int_to_date(driver->birth_date);
     char *account_creation = int_to_date(driver->account_creation);
     char *account_status;
-    
+
     if (driver->account_status)
         account_status = "active";
     else

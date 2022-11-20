@@ -1,12 +1,8 @@
 #ifndef Q1_H
 #define Q1_H
 
-void q1();
+#include "catalog.h"
 
-int build_tables_q1(GHashTable *hashD, GHashTable *hashU, char **remains, char **ids_usernames);
-
-void print_q1(GHashTable *hashD, GHashTable *hashU, char *input);
-
-void free_tables_q1(GHashTable *hashD, GHashTable *hashU);
+void print_q1(char *input, Catalog catalog);
 
 #endif
