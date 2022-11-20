@@ -144,10 +144,7 @@ void print_q2 (char *input, Catalog catalog)
 {
     char *output = NULL;
 
-    if (isdigit(input[0]))
-    {
-        
-    }
+    print_first_n (input[1], catalog);
 
     FILE *results = fopen ("Resultados/resultados.txt", "ab");
 

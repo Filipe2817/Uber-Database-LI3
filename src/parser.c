@@ -5,6 +5,7 @@
 #include "../includes/utils.h"
 #include "../includes/catalog.h"
 #include "../includes/q1.h"
+#include "../includes/q2.h"
 
 void parse_line(const char *line, char **fields)
 {
@@ -79,5 +80,4 @@ void parser_q(Catalog catalog)
         }
     }
     fclose(inputtxt);
-    
 }
