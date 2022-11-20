@@ -2,10 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "../include/catalog.h"
 #include "../include/user.h"
 #include "../include/date.h"
+#include "../include/utils.h"
 
-typedef struct user {
+typedef struct user
+{
     char *username;
     char *name;
     char *gender;
@@ -13,20 +16,23 @@ typedef struct user {
     unsigned short account_creation;
     char *pay_method;
     bool account_status;
-} *User; 
+} * User;
 
-User init_user() {
+User init_user()
+{
     User user = malloc(sizeof(struct user));
 
     user->username = NULL;
     user->name = NULL;
     user->gender = NULL;
     user->pay_method = NULL;
+    user->account_status = true;
 
     return user;
 }
 
-User create_user(char **fields) {
+User create_user(char **fields)
+{
     User user = init_user();
 
     user->username = strdup(fields[0]);
@@ -36,19 +42,39 @@ User create_user(char **fields) {
     user->account_creation = date_to_int(fields[4]);
     user->pay_method = strdup(fields[5]);
 
-    if(strcmp(fields[6], "active\n")) /* return = 0 --> str1 == str2 */
+    if (strcmp(fields[6], "active\n")) /* return = 0 --> str1 == str2 */
         user->account_status = false;
-    else
-        user->account_status = true;
 
     return user;
 }
 
-char *get_user_username(User user) {
+char *get_user_username(User user)
+{
     return strdup(user->username);
 }
 
-void free_user(User user) {
+char *get_user_name(User user)
+{
+    return strdup(user->name);
+}
+
+char *get_user_gender(User user)
+{
+    return strdup(user->gender);
+}
+
+char *get_user_age(User user)
+{
+    return get_age(user->birth_date);
+}
+
+bool get_user_account_status(User user)
+{
+    return user->account_status;
+}
+
+void free_user(User user)
+{
     free(user->username);
     free(user->name);
     free(user->gender);
@@ -57,11 +83,12 @@ void free_user(User user) {
 }
 
 // For debug purposes
-void print_user(User user) {
+void print_user(User user)
+{
     char *birth_date = int_to_date(user->birth_date);
     char *account_creation = int_to_date(user->account_creation);
     char *account_status;
-    
+
     if (user->account_status)
         account_status = "active";
     else

@@ -25,6 +25,8 @@ int main(int argc, char **argv) {
 
         //print_catalog(catalog);
 
+        parser_q(catalog);
+
         free_catalog(catalog);
         free(users_file);
         free(drivers_file);

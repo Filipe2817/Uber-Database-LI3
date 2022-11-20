@@ -5,4 +5,6 @@
 
 void parse_file(char *filename, int n_fields, void (*function_ptr)(char **, Catalog), Catalog catalog);
 
+void parser_q(Catalog catalog);
+
 #endif
