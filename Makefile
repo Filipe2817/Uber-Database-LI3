@@ -15,19 +15,20 @@ FLAGS.sanitizer = -Wall -Wextra -Wdouble-promotion -Werror=pedantic -Werror=vla 
 FLAGS.debug = -Wall -Wextra -Wdouble-promotion -Werror=pedantic -Werror=vla -pedantic-errors -Wfatal-errors -O0 -g
 FLAGS := $(FLAGS.$(BUILD))
 
-# Objects directory
+# Directories
 OBJ_DIR := build
+RESULT_DIR := Resultados 
 
 # Get sources, headers and object files
 SRCS = $(call rwildcard,src,*.c)
-HEADERS = $(call rwildcard,include,*.h)
+HEADERS = $(call rwildcard,includes,*.h)
 OBJS = $(SRCS:src/%.c=$(OBJ_DIR)/%.o) #$(SRCS:.c=.o)
 
 # Other stuff to compile with
 LIBS = -lm -lglib-2.0
-INCLUDES = -Iinclude
+INCLUDES = -Iincludes
 PKG_CONFIG = `pkg-config --cflags --libs glib-2.0`
-TARGET = main-program
+TARGET = programa-principal
 
 # Pretty stuff
 NO_COLOR = \033[m
@@ -50,6 +51,7 @@ $(OBJ_DIR)/%.o: src/%.c $(HEADERS)
 $(TARGET): $(OBJS)
 	@printf "%b" "$(COMPILING_COLOR)$(COMPILING_STRING) $(NO_COLOR)$@\n";
 	@$(CC) $(FLAGS) -o $@ $(INCLUDES) $(PKG_CONFIG) $^ $(LIBS)
+	@mkdir -p $(RESULT_DIR)
 	@printf "%b" "$(OK_COLOR)$(OK_STRING) $(NO_COLOR)\n";
 
 # Remove the object directory (and its contents) and main-program
@@ -57,4 +59,4 @@ $(TARGET): $(OBJS)
 clean:
 	@printf "%b" "$(DELETING_COLOR)$(DELETING_STRING) $(NO_COLOR)$(OBJ_DIR) directory\n"
 	@printf "%b" "$(DELETING_COLOR)$(DELETING_STRING) $(NO_COLOR)$(TARGET)\n"
-	@rm -rf $(TARGET) $(OBJ_DIR)
+	@rm -rf $(TARGET) $(OBJ_DIR) $(RESULT_DIR)

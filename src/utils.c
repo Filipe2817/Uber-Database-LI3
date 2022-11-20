@@ -3,8 +3,8 @@
 #include <assert.h>
 #include <string.h>
 #include <errno.h>
-#include "../include/date.h"
-#include "../include/utils.h"
+#include "../includes/date.h"
+#include "../includes/utils.h"
 
 #define REF_DAY "9/10/2022"
 
