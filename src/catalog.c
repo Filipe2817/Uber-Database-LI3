@@ -10,10 +10,8 @@
 
 typedef struct catalog
 {
-    /*
-    GPtrArray *users_array;
+    // GPtrArray *users_array;
     GPtrArray *drivers_array;
-    */
     GPtrArray *rides_array;
     GHashTable *users_ht;
     GHashTable *drivers_ht;
@@ -37,7 +35,7 @@ void glib_wrapper_free_ride(gpointer ride)
 Catalog create_catalog()
 {
     Catalog catalog = malloc(sizeof(struct catalog));
-
+    catalog->drivers_array = g_ptr_array_new_with_free_func (glib_wrapper_free_driver);
     catalog->rides_array = g_ptr_array_new_with_free_func(glib_wrapper_free_ride);
     catalog->users_ht = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, glib_wrapper_free_user);
     catalog->drivers_ht = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, glib_wrapper_free_driver);
@@ -57,6 +55,7 @@ void insert_driver_in_catalog(char **fields, Catalog catalog)
     Driver driver = create_driver(fields);
     char *key = get_driver_id(driver);
     g_hash_table_insert(catalog->drivers_ht, key, driver);
+    g_ptr_array_add(catalog->drivers_array, driver);
 }
 
 void insert_ride_in_catalog(char **fields, Catalog catalog)

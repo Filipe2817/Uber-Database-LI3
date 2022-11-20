@@ -68,6 +68,11 @@ void parser_q(Catalog catalog)
             input += 2;
             print_q1(input, catalog);
         }
+        else if (input[0] == '2')
+        {   
+            input += 2;
+            print_q2(input, catalog);
+        }
         else if (input[0] == '3')
         {
             input += 2;
