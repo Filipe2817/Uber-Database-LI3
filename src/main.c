@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../include/parser.h"
-#include "../include/utils.h"
-#include "../include/catalog.h"
+#include "../includes/parser.h"
+#include "../includes/utils.h"
+#include "../includes/catalog.h"
 
 #define N_USER_FIELDS 7
 #define N_DRIVER_FIELDS 9

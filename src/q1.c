@@ -3,9 +3,9 @@
 #include <glib.h>
 #include <string.h>
 #include <ctype.h>
-#include "../include/q1.h"
-#include "../include/utils.h"
-#include "../include/catalog.h"
+#include "../includes/q1.h"
+#include "../includes/utils.h"
+#include "../includes/catalog.h"
 
 void print_q1(char *input, Catalog catalog)
 {

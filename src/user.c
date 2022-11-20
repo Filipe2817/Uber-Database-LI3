@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "../include/catalog.h"
-#include "../include/user.h"
-#include "../include/date.h"
-#include "../include/utils.h"
+#include "../includes/catalog.h"
+#include "../includes/user.h"
+#include "../includes/date.h"
+#include "../includes/utils.h"
 
 typedef struct user
 {

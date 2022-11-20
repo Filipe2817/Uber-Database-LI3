@@ -1,10 +1,10 @@
 #include <glib.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "../include/catalog.h"
-#include "../include/user.h"
-#include "../include/driver.h"
-#include "../include/ride.h"
+#include "../includes/catalog.h"
+#include "../includes/user.h"
+#include "../includes/driver.h"
+#include "../includes/ride.h"
 
 // g_ptr_array_index(arr,index)
 

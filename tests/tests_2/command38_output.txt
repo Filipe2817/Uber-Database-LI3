@@ -5,7 +5,7 @@
 000000001840;Kévim Garcia;4.125
 000000001719;Simão Matias;4.091
 000000000473;Rafael Sousa;4.083
-000000008619;Sebastião Lima-Amaral;4.063
+000000008619;Sebastião Lima-Amaral;4.062
 000000001566;Carminho Ribeiro;4.053
 000000009377;Joana do Andrade;4.000
 000000008247;Valentina Torres;4.000

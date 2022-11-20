@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "../include/utils.h"
-#include "../include/catalog.h"
-#include "../include/q1.h"
+#include "../includes/utils.h"
+#include "../includes/catalog.h"
+#include "../includes/q1.h"
 
 void parse_line(const char *line, char **fields)
 {
