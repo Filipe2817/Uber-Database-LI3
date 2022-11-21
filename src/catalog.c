@@ -5,13 +5,12 @@
 #include "../includes/user.h"
 #include "../includes/driver.h"
 #include "../includes/ride.h"
-
-// g_ptr_array_index(arr,index)
+#include "../includes/utils.h"
 
 typedef struct catalog
 {
-    /*
     GPtrArray *users_array;
+    /*
     GPtrArray *drivers_array;
     */
     GPtrArray *rides_array;
@@ -38,6 +37,7 @@ Catalog create_catalog()
 {
     Catalog catalog = malloc(sizeof(struct catalog));
 
+    catalog->users_array = g_ptr_array_new_with_free_func(glib_wrapper_free_user);
     catalog->rides_array = g_ptr_array_new_with_free_func(glib_wrapper_free_ride);
     catalog->users_ht = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, glib_wrapper_free_user);
     catalog->drivers_ht = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, glib_wrapper_free_driver);
@@ -45,11 +45,24 @@ Catalog create_catalog()
     return catalog;
 }
 
+void set_stats(Ride ride, Catalog catalog) {
+    unsigned short distance = get_ride_distance(ride);
+    unsigned short date = get_ride_date(ride);
+    char *username = get_ride_user(ride);
+    User user = g_hash_table_lookup(catalog->users_ht, username);
+    
+    set_user_total_distance(user, distance);
+    set_user_latest_ride(user, date);
+    
+    free(username);
+}
+
 void insert_user_in_catalog(char **fields, Catalog catalog)
 {
     User user = create_user(fields);
     char *key = get_user_username(user);
     g_hash_table_insert(catalog->users_ht, key, user);
+    g_ptr_array_add(catalog->users_array, user);
 }
 
 void insert_driver_in_catalog(char **fields, Catalog catalog)
@@ -63,6 +76,59 @@ void insert_ride_in_catalog(char **fields, Catalog catalog)
 {
     Ride ride = create_ride(fields);
     g_ptr_array_add(catalog->rides_array, ride);
+    set_stats(ride, catalog);
+}
+
+static gint sort_user_array_by_distance(gconstpointer u1, gconstpointer u2) {
+    int result;
+    User user1 = *(User *)u1;
+    User user2 = *(User *)u2;
+
+    unsigned short dist1 = get_user_total_distance(user1);
+    unsigned short date1 = get_user_latest_ride(user1);
+    char *username1 = get_user_username(user1);
+
+    unsigned short dist2 = get_user_total_distance(user2);
+    unsigned short date2 = get_user_latest_ride(user2);
+    char *username2 = get_user_username(user2);
+    
+    if (dist1 < dist2 || (dist1 == dist2 && date1 < date2))
+        result = 1; // ordem decrescente
+
+    if (dist1 > dist2 || (dist1 == dist2 && date1 > date2))
+        result = -1; // ordem decrescente
+
+    if (dist1 == dist2 && date1 == date2) 
+        result = strcmp(username1, username2);
+    
+    free(username1);
+    free(username2);
+    
+    return result;
+}
+
+void sort_q3(Catalog catalog) {
+    g_ptr_array_sort(catalog->users_array, sort_user_array_by_distance);
+}
+
+char *get_q3(int index, Catalog catalog) {
+    User user = g_ptr_array_index(catalog->users_array, index);
+    bool account_status = get_user_account_status(user);
+    
+    if (!account_status)
+        return NULL;
+    
+    char *username = get_user_username(user);
+    char *name = get_user_name(user);
+    unsigned short total_distance = get_user_total_distance(user);
+
+    char *result = malloc(strlen(username) + strlen(name) + 20 + 2 + 1);
+    sprintf(result, "%s;%s;%hu", username, name, total_distance);
+
+    free(username);
+    free(name);
+
+    return result;
 }
 
 double get_ride_cost(char *car_class, unsigned short distance)
@@ -155,7 +221,7 @@ char *get_user_q1(char *username, Catalog catalog)
     for (i = 0; i < catalog->rides_array->len; i++)
     {
         ride = g_ptr_array_index(catalog->rides_array, i);
-        char *user_username = get_ride_user_username(ride);
+        char *user_username = get_ride_user(ride);
 
         if (strcmp(username, user_username) == 0)
         {
@@ -200,6 +266,11 @@ void glib_wrapper_print_ride(gpointer ride, gpointer user_data)
     print_ride(ride);
 }
 
+void glib_wrapper_print_user(gpointer user, gpointer user_data) {
+    (void)user_data;
+    print_user(user);
+}
+
 void print_catalog(Catalog catalog)
 {
     GHashTableIter iter1;
@@ -223,4 +294,5 @@ void print_catalog(Catalog catalog)
     }
 
     g_ptr_array_foreach(catalog->rides_array, glib_wrapper_print_ride, NULL);
+    g_ptr_array_foreach(catalog->users_array, glib_wrapper_print_user, NULL);
 }

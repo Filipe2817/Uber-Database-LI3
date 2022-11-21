@@ -7,9 +7,11 @@ Ride create_ride(char **fields);
 
 void free_ride(Ride ride);
 
+unsigned short get_ride_date(Ride ride);
+
 char *get_ride_driver_id(Ride ride);
 
-char *get_ride_user_username(Ride ride);
+char *get_ride_user(Ride ride);
 
 unsigned short get_ride_user_score(Ride ride);
 
