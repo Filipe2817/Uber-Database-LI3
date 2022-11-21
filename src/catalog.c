@@ -10,9 +10,7 @@
 typedef struct catalog
 {
     GPtrArray *users_array;
-    /*
     GPtrArray *drivers_array;
-    */
     GPtrArray *rides_array;
     GHashTable *users_ht;
     GHashTable *drivers_ht;
@@ -38,6 +36,7 @@ Catalog create_catalog()
     Catalog catalog = malloc(sizeof(struct catalog));
 
     catalog->users_array = g_ptr_array_new_with_free_func(glib_wrapper_free_user);
+    catalog->drivers_array = g_ptr_array_new_with_free_func(glib_wrapper_free_driver);
     catalog->rides_array = g_ptr_array_new_with_free_func(glib_wrapper_free_ride);
     catalog->users_ht = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, glib_wrapper_free_user);
     catalog->drivers_ht = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, glib_wrapper_free_driver);
@@ -53,6 +52,18 @@ void set_stats(Ride ride, Catalog catalog) {
     
     set_user_total_distance(user, distance);
     set_user_latest_ride(user, date);
+
+    char *driver_id = get_ride_driver_id (ride);
+
+    Driver driver = g_hash_table_lookup (catalog->drivers_ht, driver_id);
+
+    unsigned short total_rides = get_driver_total_rides (driver);
+
+    unsigned short driver_score = get_ride_driver_score (ride);
+
+    set_driver_average_rating (driver, driver_score);
+
+    set_driver_total_rides (driver);
     
     free(username);
 }
@@ -70,6 +81,7 @@ void insert_driver_in_catalog(char **fields, Catalog catalog)
     Driver driver = create_driver(fields);
     char *key = get_driver_id(driver);
     g_hash_table_insert(catalog->drivers_ht, key, driver);
+    g_ptr_array_add(catalog->drivers_array, driver);
 }
 
 void insert_ride_in_catalog(char **fields, Catalog catalog)
@@ -79,7 +91,7 @@ void insert_ride_in_catalog(char **fields, Catalog catalog)
     set_stats(ride, catalog);
 }
 
-static gint sort_user_array_by_distance(gconstpointer u1, gconstpointer u2) {
+static gint compare_user_by_distance(gconstpointer u1, gconstpointer u2) {
     int result;
     User user1 = *(User *)u1;
     User user2 = *(User *)u2;
@@ -107,8 +119,61 @@ static gint sort_user_array_by_distance(gconstpointer u1, gconstpointer u2) {
     return result;
 }
 
+static gint compare_driver_by_average_rating (gconstpointer d1, gconstpointer d2)
+{
+    int result;
+
+    Driver driver1 = *(Driver *)d1;
+    Driver driver2 = *(Driver *)d2; 
+
+    float average_rating1 = get_driver_average_rating (driver1);
+    unsigned short date1 = get_driver_latest_ride (driver1);
+    char* driver_id1 = get_driver_id (driver1);
+
+    float average_rating2 = get_driver_average_rating (driver2);
+    unsigned short date2 = get_driver_latest_ride (driver2);
+    char* driver_id2 = get_driver_id (driver2);
+
+    if (average_rating1 < average_rating2 || (average_rating1 == average_rating2 && date1 < date2)) result = 1;
+
+    if (average_rating1 > average_rating2 || (average_rating1 == average_rating2 && date1 > date2)) result = -1;
+
+    if (average_rating1 == average_rating2 && date1 == date2) result = strcmp (driver_id1, driver_id2);
+
+    free(driver_id1);
+    free(driver_id2);
+
+    return result;
+}
+
+void sort_q2 (Catalog catalog)
+{
+    g_ptr_array_sort(catalog->drivers_array, compare_driver_by_average_rating);
+}
+
 void sort_q3(Catalog catalog) {
-    g_ptr_array_sort(catalog->users_array, sort_user_array_by_distance);
+    g_ptr_array_sort(catalog->users_array, compare_user_by_distance);
+}
+
+char *get_q2(int index, Catalog catalog)
+{
+    Driver driver = g_ptr_array_index(catalog->drivers_array, index);
+    bool account_status = get_driver_account_status(driver);
+    
+    if (!account_status)
+        return NULL;
+
+    char *driver_id = get_driver_id (driver);
+    char *name = get_driver_name (driver);
+    double average_rating = get_driver_average_rating (driver);
+
+    char *result = malloc(strlen(driver_id) + strlen(name) + 5 + 2 + 1);
+    sprintf (result, "%s;%s;%0.3f", driver_id, name, average_rating);
+
+    free (driver_id);
+    free (name);
+
+    return result;
 }
 
 char *get_q3(int index, Catalog catalog) {

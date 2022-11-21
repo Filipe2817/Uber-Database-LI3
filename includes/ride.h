@@ -7,6 +7,8 @@ Ride create_ride(char **fields);
 
 void free_ride(Ride ride);
 
+unsigned short get_ride_score_driver (Ride ride);
+
 unsigned short get_ride_date(Ride ride);
 
 char *get_ride_driver_id(Ride ride);

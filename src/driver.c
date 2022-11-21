@@ -17,6 +17,9 @@ typedef struct driver
     char *license_plate;
     char *city;
     unsigned short account_creation;
+    float average_rating;
+    unsigned short total_rides;
+    unsigned short latest_ride;
     bool account_status;
 } * Driver;
 
@@ -31,6 +34,9 @@ Driver init_driver()
     driver->license_plate = NULL;
     driver->city = NULL;
     driver->account_status = true;
+    driver->average_rating = 0.0;
+    driver->total_rides = 0;
+    driver->latest_ride = 0;
 
     return driver;
 }
@@ -82,6 +88,39 @@ char *get_driver_car_class(Driver driver)
 bool get_driver_account_status(Driver driver)
 {
     return driver->account_status;
+}
+
+unsigned short get_driver_total_rides (Driver driver)
+{
+    return driver->total_rides;
+}
+
+float get_driver_average_rating (Driver driver)
+{
+    return driver->average_rating;
+}
+
+unsigned short get_driver_latest_ride (Driver driver)
+{
+    return driver->latest_ride;
+}
+
+void set_driver_latest_ride (Driver driver, unsigned short new_latest_ride)
+{
+    if (driver->latest_ride < new_latest_ride)
+        driver->latest_ride = new_latest_ride;
+}
+
+void set_driver_average_rating (Driver driver, unsigned short driver_score)
+{
+    float new_driver_average_rating = (driver->average_rating * driver->total_rides + driver_score) / (driver->total_rides + 1);
+
+    driver->average_rating = new_driver_average_rating;
+}
+
+void set_driver_total_rides (Driver driver)
+{
+    driver->total_rides++;
 }
 
 void free_driver(Driver driver)
