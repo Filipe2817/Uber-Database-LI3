@@ -95,6 +95,11 @@ void free_ride(Ride ride)
     free(ride);
 }
 
+unsigned short get_ride_score_driver (Ride ride)
+{
+    return ride->score_driver;
+}
+
 // For debug purposes
 void print_ride(Ride ride)
 {

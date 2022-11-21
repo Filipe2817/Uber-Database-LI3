@@ -15,6 +15,10 @@ void insert_ride_in_catalog(char **fields, Catalog catalog);
 
 void sort_q3(Catalog catalog);
 
+void sort_q2 (Catalog catalog);
+
+char *get_q2(int index, Catalog catalog);
+
 char *get_q3(int index, Catalog catalog);
 
 char *get_driver_q1(char *id, Catalog catalog);
