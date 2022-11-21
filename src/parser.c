@@ -4,9 +4,9 @@
 #include <assert.h>
 #include "../includes/utils.h"
 #include "../includes/catalog.h"
-#include "../includes/q1.h"
+#include "../includes/queries.h"
 
-void parse_line(const char *line, char **fields)
+void parse_line(const char *line, char **fields, char *delim)
 {
     int index = 0;
     char *line_copy = NULL;
@@ -15,7 +15,7 @@ void parse_line(const char *line, char **fields)
     line_copy = strdup(line); // save variable is fields[0]
     assert(line_copy != NULL);
 
-    while ((token = strsep(&line_copy, ";")) != NULL) // don't need to compare n_fields with index (input validation)
+    while ((token = strsep(&line_copy, delim)) != NULL) // don't need to compare n_fields with index (input validation)
         fields[index++] = token;
 }
 
@@ -39,7 +39,7 @@ void parse_file(char *filename, int n_fields, void (*function_ptr)(char **, Cata
     while ((nread = getline(&line, &len, fptr)) != -1)
     {
         char **fields = malloc(sizeof(char *) * n_fields);
-        parse_line(line, fields);
+        parse_line(line, fields, ";");
         // debug_parser(fields, n_fields);
         (*function_ptr)(fields, catalog);
         free(fields[0]);
@@ -49,30 +49,27 @@ void parse_file(char *filename, int n_fields, void (*function_ptr)(char **, Cata
     fclose(fptr);
 }
 
-void free_strings(char **ids_usernames, char **remains, int lim)
-{
-    free_str_array(ids_usernames, lim);
-    free_str_array(remains, lim);
-}
+void parse_query(char *query_path, int max_args, Catalog catalog)
+{   
+    FILE *fptr = NULL;
+    fptr = fopen(query_path, "r");
 
-void parser_q(Catalog catalog)
-{
-    FILE *inputtxt = fopen("input.txt", "r"); //ficheiro não existe, isto vai ser alterado
-    char *input = malloc(500 * sizeof(char));
-
-    while (fgets(input, 500, inputtxt) != NULL)
-    {
-        input[strcspn(input,"\n")] = '\0';
-        if (input[0] == '1')
-        {
-            input += 2;
-            print_q1(input, catalog);
-        }
-        else if (input[0] == '3')
-        {
-            input += 2;
-        }
+    if (fptr == NULL) {
+        perror("Error!");
+        return;
     }
-    fclose(inputtxt);
-    
+
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t nread;
+
+    while ((nread = getline(&line, &len, fptr)) != -1) {
+        char **fields = malloc(sizeof(char *) * max_args);
+        parse_line(line, fields, " ");
+        handle_query(fields, catalog);
+        free(fields[0]);
+        free(fields);
+    }
+    free(line);
+    fclose(fptr);
 }

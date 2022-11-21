@@ -97,11 +97,11 @@ void free_str_array(char **arr, int n)
 //     return result;
 // }
 
-char *get_age(unsigned short birth_days)
+char *get_age(unsigned short birth_date)
 {
     char *age_str = malloc(4 * sizeof(char));
     unsigned short ref_day = date_to_int(REF_DAY);
-    unsigned short age = (ref_day - birth_days) / 365.25;
+    unsigned short age = (ref_day - birth_date) / 365.25;
     sprintf(age_str, "%hu", age);
     return age_str;
 }
@@ -134,7 +134,7 @@ int str_to_int(char *str)
 {
     char *end = NULL;
     errno = 0;
-    int result = -1;
+    int result = -1; // fix this
     long value = strtol(str, &end, 10);
 
     if (errno == 0 && *end == '\0') // Boundary check not needed since we are going to do an input validation
@@ -147,7 +147,7 @@ float str_to_float(char *str)
 {
     char *end = NULL;
     errno = 0;
-    float result = -1.0;
+    float result = -1.0; //fix this
     float value = strtof(str, &end);
 
     if (errno == 0 && *end == '\0')

@@ -8,14 +8,16 @@
 #define N_USER_FIELDS 7
 #define N_DRIVER_FIELDS 9
 #define N_RIDE_FIELDS 10
+#define MAX_QUERY_ARGS 4    
 
 int main(int argc, char **argv) {
-    if(argc == 2) {
-        char *path = argv[1];
+    if(argc == 3) {
+        char *data_path = argv[1];
+        char *query_path = argv[2];
 
-        char *users_file = get_file(path, "/users.csv");
-        char *drivers_file = get_file(path, "/drivers.csv");        
-        char *rides_file = get_file(path, "/rides.csv");
+        char *users_file = get_file(data_path, "/users.csv");
+        char *drivers_file = get_file(data_path, "/drivers.csv");        
+        char *rides_file = get_file(data_path, "/rides.csv");
 
         Catalog catalog = create_catalog();
 
@@ -25,7 +27,7 @@ int main(int argc, char **argv) {
 
         //print_catalog(catalog);
 
-        parser_q(catalog);
+        parse_query(query_path, MAX_QUERY_ARGS, catalog);
 
         free_catalog(catalog);
         free(users_file);
@@ -33,7 +35,7 @@ int main(int argc, char **argv) {
         free(rides_file);
     }
     else {
-        printf("Insufficient number of arguments!");
+        printf("Wrong number of arguments!");
     }
 
     return 0;

@@ -51,12 +51,16 @@ Ride create_ride(char **fields)
     return ride;
 }
 
+unsigned short get_ride_date(Ride ride) {
+    return ride->date;
+}
+
 char *get_ride_driver_id(Ride ride)
 {
     return strdup(ride->driver_id);
 }
 
-char *get_ride_user_username(Ride ride)
+char *get_ride_user(Ride ride)
 {
     return strdup(ride->user);
 }
