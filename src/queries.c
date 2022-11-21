@@ -6,11 +6,12 @@
 #include "../includes/utils.h"
 #include "../includes/catalog.h"
 
-void handle_query(char **fields, Catalog catalog) {
+void handle_query(char **fields, Catalog catalog)
+{
     int query_number = str_to_int(fields[0]);
-    
+
     char *args = fields[1];
-    args[strcspn(args,"\n")] = '\0';
+    args[strcspn(args, "\n")] = '\0';
 
     if (query_number == 1)
         print_q1(args, catalog);
@@ -40,11 +41,12 @@ void print_q1(char *input, Catalog catalog)
     }
     else
         fprintf(results, "%s\n", output);
+
     fclose(results);
     free(output);
 }
 
-void print_q2 (char *input, Catalog catalog)
+void print_q2(char *input, Catalog catalog)
 {
     char *output = NULL;
     int n = str_to_int(input);
@@ -54,10 +56,11 @@ void print_q2 (char *input, Catalog catalog)
 
     FILE *results = fopen("Resultados/resultados.txt", "ab");
 
-    while (i<n) {
-        output = get_q2 (index, catalog);
+    while (i < n)
+    {
+        output = get_q2(index, catalog);
 
-        if (output) 
+        if (output)
         {
             fprintf(results, "%s\n", output);
             i++;
@@ -67,7 +70,7 @@ void print_q2 (char *input, Catalog catalog)
         index++;
     }
 
-    fclose (results);
+    fclose(results);
 }
 
 void print_q3(char *input, Catalog catalog)
@@ -79,11 +82,13 @@ void print_q3(char *input, Catalog catalog)
     sort_q3(catalog);
 
     FILE *results = fopen("Resultados/resultados.txt", "ab");
-    
-    while (i < n) {
+
+    while (i < n)
+    {
         output = get_q3(index, catalog);
 
-        if (output) {
+        if (output)
+        {
             fprintf(results, "%s\n", output);
             i++;
             free(output);
@@ -91,7 +96,6 @@ void print_q3(char *input, Catalog catalog)
 
         index++;
     }
-    
+
     fclose(results);
 }
-

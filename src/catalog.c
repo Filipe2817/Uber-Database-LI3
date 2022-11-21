@@ -66,6 +66,7 @@ void set_stats(Ride ride, Catalog catalog) {
     set_driver_total_rides (driver);
     
     free(username);
+    free(driver_id);
 }
 
 void insert_user_in_catalog(char **fields, Catalog catalog)

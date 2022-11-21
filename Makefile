@@ -2,9 +2,9 @@
 # The first parameter ($1) is a list of directories, and the second ($2) is a list of patterns to match
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
-# Default to sanitizer build
-# Override with `make BUILD=debug` or `make BUILD=release`
-BUILD := sanitizer
+# Default to release build
+# Override with `make BUILD=debug` or `make BUILD=sanitizer`
+BUILD := release
 
 # Compiler
 CC = gcc
@@ -17,7 +17,7 @@ FLAGS := $(FLAGS.$(BUILD))
 
 # Directories
 OBJ_DIR := build
-RESULT_DIR := Resultados 
+RESULT_DIR := Resultados
 
 # Get sources, headers and object files
 SRCS = $(call rwildcard,src,*.c)
@@ -58,5 +58,6 @@ $(TARGET): $(OBJS)
 .PHONY: clean
 clean:
 	@printf "%b" "$(DELETING_COLOR)$(DELETING_STRING) $(NO_COLOR)$(OBJ_DIR) directory\n"
+	@printf "%b" "$(DELETING_COLOR)$(DELETING_STRING) $(NO_COLOR)$(RESULT_DIR) directory\n"
 	@printf "%b" "$(DELETING_COLOR)$(DELETING_STRING) $(NO_COLOR)$(TARGET)\n"
 	@rm -rf $(TARGET) $(OBJ_DIR) $(RESULT_DIR)
