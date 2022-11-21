@@ -50,11 +50,12 @@ void parse_file(char *filename, int n_fields, void (*function_ptr)(char **, Cata
 }
 
 void parse_query(char *query_path, int max_args, Catalog catalog)
-{   
+{
     FILE *fptr = NULL;
     fptr = fopen(query_path, "r");
 
-    if (fptr == NULL) {
+    if (fptr == NULL)
+    {
         perror("Error!");
         return;
     }
@@ -62,11 +63,14 @@ void parse_query(char *query_path, int max_args, Catalog catalog)
     char *line = NULL;
     size_t len = 0;
     ssize_t nread;
+    int counter = 1;
 
-    while ((nread = getline(&line, &len, fptr)) != -1) {
+    while ((nread = getline(&line, &len, fptr)) != -1)
+    {
         char **fields = malloc(sizeof(char *) * max_args);
         parse_line(line, fields, " ");
-        handle_query(fields, catalog);
+        handle_query(fields, catalog, counter);
+        counter++;
         free(fields[0]);
         free(fields);
     }

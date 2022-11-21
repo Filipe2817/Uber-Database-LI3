@@ -44,27 +44,25 @@ Catalog create_catalog()
     return catalog;
 }
 
-void set_stats(Ride ride, Catalog catalog) {
+void set_stats(Ride ride, Catalog catalog)
+{
     unsigned short distance = get_ride_distance(ride);
     unsigned short date = get_ride_date(ride);
     char *username = get_ride_user(ride);
     User user = g_hash_table_lookup(catalog->users_ht, username);
-    
+
     set_user_total_distance(user, distance);
     set_user_latest_ride(user, date);
 
-    char *driver_id = get_ride_driver_id (ride);
 
-    Driver driver = g_hash_table_lookup (catalog->drivers_ht, driver_id);
 
-    unsigned short total_rides = get_driver_total_rides (driver);
+    unsigned short driver_score = get_ride_driver_score(ride);
+    char *driver_id = get_ride_driver_id(ride);
+    Driver driver = g_hash_table_lookup(catalog->drivers_ht, driver_id);
 
-    unsigned short driver_score = get_ride_driver_score (ride);
+    set_driver_average_rating(driver, driver_score);
+    set_driver_total_rides(driver);
 
-    set_driver_average_rating (driver, driver_score);
-
-    set_driver_total_rides (driver);
-    
     free(username);
     free(driver_id);
 }
@@ -92,7 +90,8 @@ void insert_ride_in_catalog(char **fields, Catalog catalog)
     set_stats(ride, catalog);
 }
 
-static gint compare_user_by_distance(gconstpointer u1, gconstpointer u2) {
+static gint compare_user_by_distance(gconstpointer u1, gconstpointer u2)
+{
     int result;
     User user1 = *(User *)u1;
     User user2 = *(User *)u2;
@@ -104,42 +103,45 @@ static gint compare_user_by_distance(gconstpointer u1, gconstpointer u2) {
     unsigned short dist2 = get_user_total_distance(user2);
     unsigned short date2 = get_user_latest_ride(user2);
     char *username2 = get_user_username(user2);
-    
+
     if (dist1 < dist2 || (dist1 == dist2 && date1 < date2))
         result = 1; // ordem decrescente
 
     if (dist1 > dist2 || (dist1 == dist2 && date1 > date2))
         result = -1; // ordem decrescente
 
-    if (dist1 == dist2 && date1 == date2) 
+    if (dist1 == dist2 && date1 == date2)
         result = strcmp(username1, username2);
-    
+
     free(username1);
     free(username2);
-    
+
     return result;
 }
 
-static gint compare_driver_by_average_rating (gconstpointer d1, gconstpointer d2)
+static gint compare_driver_by_average_rating(gconstpointer d1, gconstpointer d2)
 {
     int result;
 
     Driver driver1 = *(Driver *)d1;
-    Driver driver2 = *(Driver *)d2; 
+    Driver driver2 = *(Driver *)d2;
 
-    float average_rating1 = get_driver_average_rating (driver1);
-    unsigned short date1 = get_driver_latest_ride (driver1);
-    char* driver_id1 = get_driver_id (driver1);
+    float average_rating1 = get_driver_average_rating(driver1);
+    unsigned short date1 = get_driver_latest_ride(driver1);
+    char *driver_id1 = get_driver_id(driver1);
 
-    float average_rating2 = get_driver_average_rating (driver2);
-    unsigned short date2 = get_driver_latest_ride (driver2);
-    char* driver_id2 = get_driver_id (driver2);
+    float average_rating2 = get_driver_average_rating(driver2);
+    unsigned short date2 = get_driver_latest_ride(driver2);
+    char *driver_id2 = get_driver_id(driver2);
 
-    if (average_rating1 < average_rating2 || (average_rating1 == average_rating2 && date1 < date2)) result = 1;
+    if (average_rating1 < average_rating2 || (average_rating1 == average_rating2 && date1 < date2))
+        result = 1;
 
-    if (average_rating1 > average_rating2 || (average_rating1 == average_rating2 && date1 > date2)) result = -1;
+    if (average_rating1 > average_rating2 || (average_rating1 == average_rating2 && date1 > date2))
+        result = -1;
 
-    if (average_rating1 == average_rating2 && date1 == date2) result = strcmp (driver_id1, driver_id2);
+    if (average_rating1 == average_rating2 && date1 == date2)
+        result = strcmp(driver_id1, driver_id2);
 
     free(driver_id1);
     free(driver_id2);
@@ -147,12 +149,13 @@ static gint compare_driver_by_average_rating (gconstpointer d1, gconstpointer d2
     return result;
 }
 
-void sort_q2 (Catalog catalog)
+void sort_q2(Catalog catalog)
 {
     g_ptr_array_sort(catalog->drivers_array, compare_driver_by_average_rating);
 }
 
-void sort_q3(Catalog catalog) {
+void sort_q3(Catalog catalog)
+{
     g_ptr_array_sort(catalog->users_array, compare_user_by_distance);
 }
 
@@ -160,30 +163,31 @@ char *get_q2(int index, Catalog catalog)
 {
     Driver driver = g_ptr_array_index(catalog->drivers_array, index);
     bool account_status = get_driver_account_status(driver);
-    
+
     if (!account_status)
         return NULL;
 
-    char *driver_id = get_driver_id (driver);
-    char *name = get_driver_name (driver);
-    double average_rating = get_driver_average_rating (driver);
+    char *driver_id = get_driver_id(driver);
+    char *name = get_driver_name(driver);
+    double average_rating = get_driver_average_rating(driver);
 
     char *result = malloc(strlen(driver_id) + strlen(name) + 5 + 2 + 1);
-    sprintf (result, "%s;%s;%0.3f", driver_id, name, average_rating);
+    sprintf(result, "%s;%s;%0.3f", driver_id, name, average_rating);
 
-    free (driver_id);
-    free (name);
+    free(driver_id);
+    free(name);
 
     return result;
 }
 
-char *get_q3(int index, Catalog catalog) {
+char *get_q3(int index, Catalog catalog)
+{
     User user = g_ptr_array_index(catalog->users_array, index);
     bool account_status = get_user_account_status(user);
-    
+
     if (!account_status)
         return NULL;
-    
+
     char *username = get_user_username(user);
     char *name = get_user_name(user);
     unsigned short total_distance = get_user_total_distance(user);
@@ -332,7 +336,8 @@ void glib_wrapper_print_ride(gpointer ride, gpointer user_data)
     print_ride(ride);
 }
 
-void glib_wrapper_print_user(gpointer user, gpointer user_data) {
+void glib_wrapper_print_user(gpointer user, gpointer user_data)
+{
     (void)user_data;
     print_user(user);
 }
