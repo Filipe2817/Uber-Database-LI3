@@ -3,102 +3,15 @@
 #include <assert.h>
 #include <string.h>
 #include <errno.h>
+#include <math.h>
+#include <limits.h>
+#include <ctype.h>
 #include "../includes/date.h"
 #include "../includes/utils.h"
 
 #define REF_DAY "9/10/2022"
 
-// char **split_string(char *str, int n_elems)
-// {
-//     char **result = malloc(sizeof(char *) * n_elems);
-//     char *token = NULL;
-//     int index = 0;
-
-//     while ((token = strsep(&str, ";")) != NULL)
-//         result[index++] = token;
-
-//     return result;
-// }
-
-// char **parse_line(char *line, int n_elems)
-// {
-//     char **result;
-//     char *line_copy;
-//     line_copy = strdup(line);
-//     assert(line_copy != NULL);
-
-//     result = split_string(line_copy, n_elems);
-
-//     // printf("--> ");
-//     // for(int i = 0; i < 7; i++)
-//     //     printf("%s ", result[i]);
-
-//     // free(save);
-//     //  free(result);
-//     return result;
-// }
-
-void free_str_array(char **arr, int n)
-{
-    int i = 0;
-    for (i = 0; i < n; i++)
-    {
-        free(arr[i]);
-    }
-    free(arr);
-}
-
-// char *get_age(char *birth_date)
-// {
-//     char ref_age[] = "9/10/2022";
-//     char *age_str = malloc(5 * sizeof(char));
-//     unsigned short birth_days = date_to_int(birth_date);
-//     unsigned short ref_days = date_to_int(ref_age);
-//     unsigned short age_days = ref_days - birth_days;
-//     unsigned short age = age_days / 365;
-//     sprintf(age_str, "%hu", age);
-//     return age_str;
-// }
-
-// char *strcat_driver_data(char **strArr)
-// {
-//     char *result = malloc(10000 * sizeof(char));
-//     result[0] = '\0';
-//     strcat(result, strArr[1]);
-//     strcat(result, ";");
-//     strcat(result, strArr[3]);
-//     strcat(result, ";");
-//     strcat(result, get_age(strArr[2]));
-//     strcat(result, ";");
-//     return result;
-// }
-
-// char *strcat_user_data(char **strArr)
-// {
-//     char *result = malloc(100 * sizeof(char));
-//     result[0] = '\0';
-//     strcat(result, strArr[1]);
-//     strcat(result, ";");
-//     strcat(result, strArr[2]);
-//     strcat(result, ";");
-//     strcat(result, get_age(strArr[3]));
-//     strcat(result, ";");
-//     return result;
-// }
-
-// char *strcat_user_data_q3(char **strArr)
-// {
-//     char *result = malloc(100 * sizeof(char));
-//     result[0] = '\0';
-//     strcat(result, strArr[0]);
-//     strcat(result, ";");
-//     strcat(result, strArr[1]);
-//     strcat(result, ";");
-//     return result;
-// }
-
-char *get_age(unsigned short birth_date)
-{
+char *get_age(unsigned short birth_date) {
     char *age_str = malloc(4 * sizeof(char));
     unsigned short ref_day = date_to_int(REF_DAY);
     unsigned short age = (ref_day - birth_date) / 365.25;
@@ -106,54 +19,156 @@ char *get_age(unsigned short birth_date)
     return age_str;
 }
 
-// void init_str_to_0(char *str)
-// {
-//     str[0] = '\0';
-// }
+unsigned short get_age_no_ref(unsigned short birth_date) {
+    return birth_date / 365.25;
+}
 
-char *get_file(char *path, const char *file)
-{
+char *get_file(char *path, const char *file) {
     char *result = malloc(strlen(path) + strlen(file) + 1);
     strcpy(result, path);
     strcat(result, file);
     return result;
 }
 
-void debug_parser(char **arr, int n)
-{
-    int i;
-    printf("---> ");
+int is_positive_integer(char *str) {
+    char *end_ptr = str;
+    errno = 0;
+    unsigned long value = 0;
 
-    for (i = 0; i < n - 1; i++)
-        printf("%s, ", arr[i]);
+    if (strchr(str, '-') == NULL)
+        value = strtoul(str, &end_ptr, 10);
 
-    printf("%s", arr[i]);
+    /*
+    --> check for minus sign in string: valid conversion (uses ULONG_MAX to find a value) but it needs to be excluded
+    --> errno != 0 : conversion failed (EINVAL, ERANGE)
+    --> str == end_ptr : conversion failed (no characters consumed)
+    --> *end_ptr != 0 : conversion failed (trailing data)
+    */
+
+    return errno == 0 && str != end_ptr && *end_ptr == '\0' && value > 0;
 }
 
-int str_to_int(char *str)
-{
-    char *end = NULL;
+int is_non_negative_double(char *str) {
+    char *end_ptr = str;
     errno = 0;
-    int result = -1; // fix this
-    long value = strtol(str, &end, 10);
 
-    if (errno == 0 && *end == '\0') // Boundary check not needed since we are going to do an input validation
+    double value = strtod(str, &end_ptr);
+
+    /*
+    --> errno != 0 : conversion failed (EINVAL, ERANGE)
+    --> str == end_ptr : conversion failed (no characters consumed)
+    --> *end_ptr != 0 : conversion failed (trailing data)
+    --> isnan == 1 : valid conversion but it needs to be excluded
+    --> isinf == 1 : valid conversion but it needs to be excluded
+    */
+
+    return errno == 0 && str != end_ptr && *end_ptr == '\0' && !isnan(value) && !isinf(value) && value >= 0;
+}
+
+int str_to_int(char *str) {
+    char *end;
+    errno = 0;
+    int result = -1;
+    long value = strtol(str, &end, 10); // strtoul
+
+    if (errno == 0 && *end == '\0') // Boundary check not needed since we are doing input validation
         result = (int)value;
 
     return result;
 }
 
-float str_to_float(char *str)
-{
-    char *end = NULL;
+double str_to_double(char *str) {
+    char *end;
     errno = 0;
-    float result = -1.0; //fix this
-    float value = strtof(str, &end);
+    double result = -1.0;
+    double value = strtod(str, &end);
 
-    if (errno == 0 && *end == '\0')
-    {
+    if (errno == 0 && *end == '\0') {
         result = value;
     }
+
+    return result;
+}
+
+int nearly_equal_fp_numbers(double f1, double f2, double epsilon) { // https://floating-point-gui.de/
+    double absf1 = fabs(f1);
+    double absf2 = fabs(f2);
+    double diff = fabs(f1 - f2);
+
+    if (f1 == f2) // shortcut, handles infinities
+        return 1;
+    else if (f1 == 0 || f2 == 0 || (absf1 + absf2 < __DBL_MIN__))
+        // a or b is zero or both are extremely close to it
+        // relative error is less meaningful here
+        return diff < (epsilon * __DBL_MIN__);
+    else // use relative error
+        return diff / fmin((absf1 + absf2), __DBL_MAX__) < epsilon;
+}
+
+char *lower_string(char *str) {
+    for (char *p = str; *p; p++)
+        *p = tolower(*p);
+    return str;
+}
+
+int first_occurrence_ptr_array_bsearch(GPtrArray *array, GCompareDataFunc compare_func, gpointer target, int search_bigger_nearest, gpointer extra_data) {
+    if (compare_func == NULL || array == NULL) {
+        perror("Error: Binary search failed!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int left = 0, right = array->len - 1, result = -1;
+    int middle, value;
+    void *elem;
+
+    while (left <= right) {
+        middle = left + (right - left) / 2;
+        elem = g_ptr_array_index(array, middle);
+        value = compare_func(&elem, target, extra_data);
+
+        if (value > 0)
+            right = middle - 1;
+        else if (value < 0)
+            left = middle + 1;
+        else {
+            result = middle;
+            right = middle - 1;
+        }
+    }
+
+    if (search_bigger_nearest == 1 && result == -1 && left < (int)array->len)
+        result = right + 1;
+
+    return result;
+}
+
+int last_occurrence_ptr_array_bsearch(GPtrArray *array, GCompareDataFunc compare_func, gpointer target, int search_smaller_nearest, gpointer extra_data) {
+    if (compare_func == NULL || array == NULL) {
+        perror("Error: Binary search failed!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int left = 0, right = array->len - 1, result = -1;
+    int middle, value;
+    void *elem;
+
+    while (left <= right) {
+        middle = left + (right - left) / 2;
+        elem = g_ptr_array_index(array, middle);
+        value = compare_func(&elem, target, extra_data);
+
+        if (value > 0)
+            right = middle - 1;
+        else if (value < 0)
+            left = middle + 1;
+        else {
+            result = middle;
+            left = middle + 1;
+        }
+    }
+
+    if (search_smaller_nearest == 1 && result == -1)
+        result = left - 1;
 
     return result;
 }

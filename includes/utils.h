@@ -1,26 +1,30 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-// char **parse_line(char *line, int n_elems);
+#include <glib.h>
 
-void free_str_array(char **arr, int n);
+#define IS_EMPTY(str) (!str[0])
 
-// char *strcat_driver_data(char **strArr);
+char *get_age(unsigned short birth_day);
 
-// char *strcat_user_data(char **strArr);
-
-// char *strcat_user_data_q3(char **strArr);
-
-int str_to_int(char *str);
-
-void init_str_to_0(char *str);
+unsigned short get_age_no_ref(unsigned short birth_date);
 
 char *get_file(char *path, const char *file);
 
-void debug_parser(char **arr, int n);
+int is_positive_integer(char *str);
 
-float str_to_float(char *str);
+int is_non_negative_double(char *str);
 
-char* get_age(unsigned short birth_day);
+int str_to_int(char *str);
+
+double str_to_double(char *str);
+
+int nearly_equal_fp_numbers(double f1, double f2, double epsilon);
+
+char *lower_string(char *str);
+
+int first_occurrence_ptr_array_bsearch(GPtrArray *array, GCompareDataFunc compare_func, gpointer target, int search_bigger_nearest, gpointer extra_data);
+
+int last_occurrence_ptr_array_bsearch(GPtrArray *array, GCompareDataFunc compare_func, gpointer target, int search_smaller_nearest, gpointer extra_data);
 
 #endif

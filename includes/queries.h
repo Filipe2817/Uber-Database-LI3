@@ -1,8 +1,6 @@
-#ifndef Q1_H
-#define Q1_H
+#ifndef QUERIES_H
+#define QUERIES_H
 
-#include "catalog.h"
-
-void handle_query(char **fields, Catalog catalog, int counter);
+void handle_query(Output_Type output_struct, char **fields, va_list args);
 
 #endif
