@@ -6,8 +6,8 @@ Explore modularity and encapsulation in C by creating a database-like program th
 
 This repository uses a dataset hosted on Kaggle.  
 
-📂 **Dataset Name**: [Uber-Database-LI3-Datasets](https://www.kaggle.com/datasets/filipe2817/uber-database-li3-datasets)
-📅 **Last Updated**: [28/01/2025]  
+📂 **Dataset**: [Uber-Database-LI3-Datasets](https://www.kaggle.com/datasets/filipe2817/uber-database-li3-datasets) \
+📅 **Last Updated**: [28/01/2025] \
 📄 **License**: [MIT]  
 
 Download it to test the project.
