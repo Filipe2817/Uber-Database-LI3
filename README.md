@@ -11,3 +11,7 @@ This repository uses a dataset hosted on Kaggle.
 📄 **License**: [MIT]  
 
 Download it to test the project.
+
+## Dependencies
+
+- [Glib](https://docs.gtk.org/glib/)
